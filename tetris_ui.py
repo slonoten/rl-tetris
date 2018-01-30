@@ -7,9 +7,10 @@ from tetris import Tetris
 
 
 def print_well(stdscr, well):
+    bricks = [' ', 'X', '#']
     well_rows_n = len(well)
     for i in range(well_rows_n):
-        row = '|' + ''.join([(' ' if x == 0 else 'X') for x in well[i]]) + '|'
+        row = '|' + ''.join([bricks[x] for x in well[i]]) + '|'
         stdscr.addstr(i, 0, row)
     stdscr.addstr(well_rows_n, 0, '+' + '-' * len(well[0]) + '+')
 

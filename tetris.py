@@ -11,16 +11,16 @@ class GameOverError(Exception):
 class Tetris:
     "Class for tetris engine"
     __figure_patterns = [[[1, 1],
-                  [1, 1]],
-                 [[1, 1, 0],
-                  [0, 1, 1]],
-                 [[0, 1, 1],
-                  [1, 1, 0]],
-                 [[1, 1, 1],
-                  [1, 0, 0]],
-                 [[1, 1, 1],
-                  [0, 0, 1]],
-                 [[1, 1, 1, 1]]]
+                          [1, 1]],
+                         [[1, 1, 0],
+                          [0, 1, 1]],
+                         [[0, 1, 1],
+                          [1, 1, 0]],
+                         [[1, 1, 1],
+                          [1, 0, 0]],
+                         [[1, 1, 1],
+                          [0, 0, 1]],
+                         [[1, 1, 1, 1]]]
 
     def __init__(self, columns_num=10, rows_num=20):
         self.__build_figures()
@@ -68,7 +68,7 @@ class Tetris:
         return self._compose_well(), self.__score, False
 
     @staticmethod
-    def rotate(figure):
+    def __rotate(figure):
         new_figure = [[0] * len(figure) for i in range(len(figure[0]))]
         width = len(figure[0])
         for i in range(len(figure)):
@@ -81,7 +81,7 @@ class Tetris:
         for figure in self.__figure_patterns:
             figures = [figure]
             for i in range(3):
-                figures.append(Tetris.rotate(figures[i]))
+                figures.append(Tetris.__rotate(figures[i]))
             self.__figures.append(figures)
 
     def __place_new_figure(self):
@@ -111,25 +111,31 @@ class Tetris:
         for i in range(len(self.__figure)):
             for j in range(len(self.__figure[i])):
                 if self.__figure[i][j] > 0:
-                    well[self.__figure_row + i][self.__figure_column + j] = fill_with
+                    well[self.__figure_row +
+                         i][self.__figure_column + j] = fill_with
 
     def __apply_command(self, command):
         if command in [1, 2]:
             # move
             shift = -1 if command == 1 else 1
-            if not self.__check_is_intersection(self.__figure, self.__figure_row, self.__figure_column + shift):
+            if not self.__check_is_intersection(
+                    self.__figure, self.__figure_row, self.__figure_column + shift):
                 self.__figure_column = self.__figure_column + shift
         elif command == 3:
             # rotate
             new_angle = (self.__figure_angle + 1) & 3
             new_figure = self.__figures[self.__figure_idx][new_angle]
-            if not self.__check_is_intersection(new_figure, self.__figure_row, self.__figure_column):
+            if not self.__check_is_intersection(
+                    new_figure, self.__figure_row, self.__figure_column):
                 self.__figure = new_figure
                 self.__figure_angle = new_angle
         elif command == 4:
-            while not self.__check_is_intersection(self.__figure, self.__figure_row + 1, self.__figure_column):
+            while not self.__check_is_intersection(
+                    self.__figure, self.__figure_row + 1, self.__figure_column):
                 self.__figure_row = self.__figure_row + 1
 
+    @staticmethod
+    def __calc_score(n_rows): return (2**n_rows - 1) * 100
 
     def __remove_full_rows(self):
         rows_removed = 0
@@ -139,7 +145,7 @@ class Tetris:
             if sum(self.__well[row_to_check]) == self.__columns_num:
                 self.__well.pop(row_to_check)
                 rows_removed = rows_removed + 1
-        self.__score = self.__score + rows_removed * 100
+        self.__score = self.__score + Tetris.__calc_score(rows_removed)
         for i in range(rows_removed):
             self.__well.insert(0, [0] * self.__columns_num)
 
@@ -147,6 +153,3 @@ class Tetris:
         well = copy.deepcopy(self.__well)
         self.__freeze_figure(well, 2)
         return well
-
-
-t = Tetris()
