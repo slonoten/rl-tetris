@@ -22,13 +22,18 @@ class Tetris:
                           [0, 0, 1]],
                          [[1, 1, 1, 1]]]
 
-    def __init__(self, columns_num=10, rows_num=20):
+    def __init__(self, columns_num=10, rows_num=20, well=None):
         self.__build_figures()
         self.__figure = None
         self.__columns_num = columns_num
         self.__rows_num = rows_num
-        self.__well = [
-            [0] * self.__columns_num for i in range(self.__rows_num)]
+        if well is None:
+            self.__well = [
+                [0] * self.__columns_num for i in range(self.__rows_num)]
+        else:
+            assert len(well) == rows_num
+            assert [len(r) for r in well] == [columns_num] * rows_num
+            self.__well = copy.deepcopy(well)
         self.__figure_row = -1
         self.__figure_column = 0
         self.__place_new_figure()
